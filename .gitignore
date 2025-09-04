@@ -1,0 +1,10 @@
+main
+packer-plugin-kubevirt
+**/packer_log*.txt
+**/git_*test.pkr.hcl
+crash.log
+
+dist/*
+.docs/*
+docs.zip
+vendor/*
