@@ -1,0 +1,70 @@
+---
+modeline: |
+  vim: set ft=pandoc:
+description: |
+  The KubeVirt ISO builder provisions a Virtual Machine (VM) inside
+  Kubernetes from an existing ISO file and creates VM image from it.
+page_title: KubeVirt ISO - Builders
+nav_title: ISO
+---
+
+# KubeVirt Builder (from an ISO)
+
+Type: `kubevirt-iso`
+Artifact BuilderId: `kubevirt.iso`
+
+The KubeVirt ISO builder creates VM image inside a Kubernetes cluster from
+ISO file. The builder supports Linux and Windows operating systems. Provisioning is done
+through SSH or WinRM once the guest is installed.
+
+---
+
+## Basic Example
+
+Here is a basic example showing how to build a Linux VM image using a Fedora ISO:
+
+```hcl
+source "kubevirt-iso" "fedora" {
+  # Kubernetes configuration
+  kube_config     = "~/.kube/config"
+  name            = "fedora-42-rand-85"
+  namespace       = "vm-images"
+  iso_volume_name = "fedora-42-x86-64-iso"
+
+  # Temporary VM type and preferences
+  disk_size     = "10Gi"
+  instance_type = "o1.medium"
+  preference    = "fedora"
+
+  # Timeout for installation to complete
+  installation_wait_timeout = "15m"
+}
+
+build {
+  sources = ["source.kubevirt-iso.fedora"]
+}
+```
+
+## KubeVirt-ISO Builder Configuration Reference
+
+### Required Configuration
+
+@include 'builder/kubevirt/iso/Config-required.mdx'
+
+### Not Required Configuration
+
+@include 'builder/kubevirt/iso/Config-not-required.mdx'
+
+### Network Configuration
+
+@include 'builder/kubevirt/iso/Network.mdx'
+@include 'builder/kubevirt/iso/Network-not-required.mdx'
+
+@include 'builder/kubevirt/iso/NetworkSource.mdx'
+@include 'builder/kubevirt/iso/NetworkSource-not-required.mdx'
+
+@include 'builder/kubevirt/iso/PodNetwork.mdx'
+@include 'builder/kubevirt/iso/PodNetwork-not-required.mdx'
+
+@include 'builder/kubevirt/iso/MultusNetwork.mdx'
+@include 'builder/kubevirt/iso/MultusNetwork-not-required.mdx'

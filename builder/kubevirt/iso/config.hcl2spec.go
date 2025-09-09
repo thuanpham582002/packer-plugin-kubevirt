@@ -18,35 +18,35 @@ type FlatConfig struct {
 	PackerOnError           *string           `mapstructure:"packer_on_error" cty:"packer_on_error" hcl:"packer_on_error"`
 	PackerUserVars          map[string]string `mapstructure:"packer_user_variables" cty:"packer_user_variables" hcl:"packer_user_variables"`
 	PackerSensitiveVars     []string          `mapstructure:"packer_sensitive_variables" cty:"packer_sensitive_variables" hcl:"packer_sensitive_variables"`
-	KubeConfig              *string           `mapstructure:"kube_config" cty:"kube_config" hcl:"kube_config"`
-	Name                    *string           `mapstructure:"name" cty:"name" hcl:"name"`
-	Namespace               *string           `mapstructure:"namespace" cty:"namespace" hcl:"namespace"`
-	IsoVolumeName           *string           `mapstructure:"iso_volume_name" cty:"iso_volume_name" hcl:"iso_volume_name"`
-	DiskSize                *string           `mapstructure:"disk_size" cty:"disk_size" hcl:"disk_size"`
-	InstanceType            *string           `mapstructure:"instance_type" cty:"instance_type" hcl:"instance_type"`
-	InstanceTypeKind        *string           `mapstructure:"instance_type_kind" cty:"instance_type_kind" hcl:"instance_type_kind"`
-	Preference              *string           `mapstructure:"preference" cty:"preference" hcl:"preference"`
-	PreferenceKind          *string           `mapstructure:"preference_kind" cty:"preference_kind" hcl:"preference_kind"`
-	OperatingSystemType     *string           `mapstructure:"os_type" cty:"os_type" hcl:"os_type"`
-	Networks                []FlatNetwork     `mapstructure:"networks" cty:"networks" hcl:"networks"`
-	MediaFiles              []string          `mapstructure:"media_files" cty:"media_files" hcl:"media_files"`
-	BootCommand             []string          `mapstructure:"boot_command" cty:"boot_command" hcl:"boot_command"`
-	BootWait                *string           `mapstructure:"boot_wait" cty:"boot_wait" hcl:"boot_wait"`
-	InstallationWaitTimeout *string           `mapstructure:"installation_wait_timeout" cty:"installation_wait_timeout" hcl:"installation_wait_timeout"`
-	Communicator            *string           `mapstructure:"communicator" cty:"communicator" hcl:"communicator"`
-	SSHHost                 *string           `mapstructure:"ssh_host" cty:"ssh_host" hcl:"ssh_host"`
-	SSHLocalPort            *int              `mapstructure:"ssh_local_port" cty:"ssh_local_port" hcl:"ssh_local_port"`
-	SSHRemotePort           *int              `mapstructure:"ssh_remote_port" cty:"ssh_remote_port" hcl:"ssh_remote_port"`
-	SSHUsername             *string           `mapstructure:"ssh_username" cty:"ssh_username" hcl:"ssh_username"`
-	SSHPassword             *string           `mapstructure:"ssh_password" cty:"ssh_password" hcl:"ssh_password"`
-	SSHWaitTimeout          *string           `mapstructure:"ssh_wait_timeout" cty:"ssh_wait_timeout" hcl:"ssh_wait_timeout"`
-	WinRMHost               *string           `mapstructure:"winrm_host" cty:"winrm_host" hcl:"winrm_host"`
-	WinRMLocalPort          *int              `mapstructure:"winrm_local_port" cty:"winrm_local_port" hcl:"winrm_local_port"`
-	WinRMRemotePort         *int              `mapstructure:"winrm_remote_port" cty:"winrm_remote_port" hcl:"winrm_remote_port"`
-	WinRMUsername           *string           `mapstructure:"winrm_username" cty:"winrm_username" hcl:"winrm_username"`
-	WinRMPassword           *string           `mapstructure:"winrm_password" cty:"winrm_password" hcl:"winrm_password"`
-	WinRMWaitTimeout        *string           `mapstructure:"winrm_wait_timeout" cty:"winrm_wait_timeout" hcl:"winrm_wait_timeout"`
-	KeepVM                  *bool             `mapstructure:"keep_vm" cty:"keep_vm" hcl:"keep_vm"`
+	KubeConfig              *string           `mapstructure:"kube_config" required:"true" cty:"kube_config" hcl:"kube_config"`
+	Name                    *string           `mapstructure:"name" required:"true" cty:"name" hcl:"name"`
+	Namespace               *string           `mapstructure:"namespace" required:"true" cty:"namespace" hcl:"namespace"`
+	IsoVolumeName           *string           `mapstructure:"iso_volume_name" required:"true" cty:"iso_volume_name" hcl:"iso_volume_name"`
+	DiskSize                *string           `mapstructure:"disk_size" required:"true" cty:"disk_size" hcl:"disk_size"`
+	InstanceType            *string           `mapstructure:"instance_type" required:"true" cty:"instance_type" hcl:"instance_type"`
+	InstanceTypeKind        *string           `mapstructure:"instance_type_kind" required:"false" cty:"instance_type_kind" hcl:"instance_type_kind"`
+	Preference              *string           `mapstructure:"preference" required:"true" cty:"preference" hcl:"preference"`
+	PreferenceKind          *string           `mapstructure:"preference_kind" required:"false" cty:"preference_kind" hcl:"preference_kind"`
+	OperatingSystemType     *string           `mapstructure:"os_type" required:"false" cty:"os_type" hcl:"os_type"`
+	Networks                []FlatNetwork     `mapstructure:"networks" required:"false" cty:"networks" hcl:"networks"`
+	MediaFiles              []string          `mapstructure:"media_files" required:"false" cty:"media_files" hcl:"media_files"`
+	BootCommand             []string          `mapstructure:"boot_command" required:"false" cty:"boot_command" hcl:"boot_command"`
+	BootWait                *string           `mapstructure:"boot_wait" required:"false" cty:"boot_wait" hcl:"boot_wait"`
+	InstallationWaitTimeout *string           `mapstructure:"installation_wait_timeout" required:"true" cty:"installation_wait_timeout" hcl:"installation_wait_timeout"`
+	Communicator            *string           `mapstructure:"communicator" required:"false" cty:"communicator" hcl:"communicator"`
+	SSHHost                 *string           `mapstructure:"ssh_host" required:"false" cty:"ssh_host" hcl:"ssh_host"`
+	SSHLocalPort            *int              `mapstructure:"ssh_local_port" required:"false" cty:"ssh_local_port" hcl:"ssh_local_port"`
+	SSHRemotePort           *int              `mapstructure:"ssh_remote_port" required:"false" cty:"ssh_remote_port" hcl:"ssh_remote_port"`
+	SSHUsername             *string           `mapstructure:"ssh_username" required:"false" cty:"ssh_username" hcl:"ssh_username"`
+	SSHPassword             *string           `mapstructure:"ssh_password" required:"false" cty:"ssh_password" hcl:"ssh_password"`
+	SSHWaitTimeout          *string           `mapstructure:"ssh_wait_timeout" required:"false" cty:"ssh_wait_timeout" hcl:"ssh_wait_timeout"`
+	WinRMHost               *string           `mapstructure:"winrm_host" required:"false" cty:"winrm_host" hcl:"winrm_host"`
+	WinRMLocalPort          *int              `mapstructure:"winrm_local_port" required:"false" cty:"winrm_local_port" hcl:"winrm_local_port"`
+	WinRMRemotePort         *int              `mapstructure:"winrm_remote_port" required:"false" cty:"winrm_remote_port" hcl:"winrm_remote_port"`
+	WinRMUsername           *string           `mapstructure:"winrm_username" required:"false" cty:"winrm_username" hcl:"winrm_username"`
+	WinRMPassword           *string           `mapstructure:"winrm_password" required:"false" cty:"winrm_password" hcl:"winrm_password"`
+	WinRMWaitTimeout        *string           `mapstructure:"winrm_wait_timeout" required:"false" cty:"winrm_wait_timeout" hcl:"winrm_wait_timeout"`
+	KeepVM                  *bool             `mapstructure:"keep_vm" required:"false" cty:"keep_vm" hcl:"keep_vm"`
 }
 
 // FlatMapstructure returns a new FlatConfig.

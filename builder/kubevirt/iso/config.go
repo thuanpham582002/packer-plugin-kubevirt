@@ -62,37 +62,80 @@ type MultusNetwork struct {
 type Config struct {
 	common.PackerConfig `mapstructure:",squash"`
 
-	KubeConfig              string        `mapstructure:"kube_config"`
-	Name                    string        `mapstructure:"name"`
-	Namespace               string        `mapstructure:"namespace"`
-	IsoVolumeName           string        `mapstructure:"iso_volume_name"`
-	DiskSize                string        `mapstructure:"disk_size"`
-	InstanceType            string        `mapstructure:"instance_type"`
-	InstanceTypeKind        string        `mapstructure:"instance_type_kind"`
-	Preference              string        `mapstructure:"preference"`
-	PreferenceKind          string        `mapstructure:"preference_kind"`
-	OperatingSystemType     string        `mapstructure:"os_type"`
-	Networks                []Network     `mapstructure:"networks"`
-	MediaFiles              []string      `mapstructure:"media_files"`
-	BootCommand             []string      `mapstructure:"boot_command"`
-	BootWait                time.Duration `mapstructure:"boot_wait"`
-	InstallationWaitTimeout time.Duration `mapstructure:"installation_wait_timeout"`
-	Communicator            string        `mapstructure:"communicator"`
-	SSHHost                 string        `mapstructure:"ssh_host"`
-	SSHLocalPort            int           `mapstructure:"ssh_local_port"`
-	SSHRemotePort           int           `mapstructure:"ssh_remote_port"`
-	SSHUsername             string        `mapstructure:"ssh_username"`
-	SSHPassword             string        `mapstructure:"ssh_password"`
-	SSHWaitTimeout          time.Duration `mapstructure:"ssh_wait_timeout"`
-	WinRMHost               string        `mapstructure:"winrm_host"`
-	WinRMLocalPort          int           `mapstructure:"winrm_local_port"`
-	WinRMRemotePort         int           `mapstructure:"winrm_remote_port"`
-	WinRMUsername           string        `mapstructure:"winrm_username"`
-	WinRMPassword           string        `mapstructure:"winrm_password"`
-	WinRMWaitTimeout        time.Duration `mapstructure:"winrm_wait_timeout"`
+	// KubeConfig is the path to the kubeconfig file.
+	KubeConfig string `mapstructure:"kube_config" required:"true"`
+	// Name is the name of the VM image.
+	Name string `mapstructure:"name" required:"true"`
+	// Namespace is the namespace in which to create the VM image.
+	Namespace string `mapstructure:"namespace" required:"true"`
+	// ISO Volume Name is the name of the DataVolume resource that contains the installation ISO.
+	// This DataVolume must already exist in the namespace.
+	IsoVolumeName string `mapstructure:"iso_volume_name" required:"true"`
+	// DiskSize is the size of the root disk to of the temporary VM.
+	DiskSize string `mapstructure:"disk_size" required:"true"`
+	// InstanceType is the name of the InstanceType resource to use in the temporary VM.
+	InstanceType string `mapstructure:"instance_type" required:"true"`
+	// InstanceTypeKind is the kind of the InstanceType resource to use in the temporary VM.
+	// Other supported value is "virtualmachineclusterinstancetype".
+	InstanceTypeKind string `mapstructure:"instance_type_kind" required:"false"`
+	// Preference is the name of the Preference resource to use in the temporary VM.
+	Preference string `mapstructure:"preference" required:"true"`
+	// PreferenceKind is the kind of the Preference resource to use in the temporary VM.
+	// Other supported value is "virtualmachineclusterpreference".
+	PreferenceKind string `mapstructure:"preference_kind" required:"false"`
+	// OperatingSystemType is the type of operating system to install.
+	// Supported values are "linux" and "windows". Default is "linux".
+	OperatingSystemType string `mapstructure:"os_type" required:"false"`
+	// Networks is a list of networks to attach to the temporary VM.
+	// If no networks are specified, a single pod network will be used.
+	Networks []Network `mapstructure:"networks" required:"false"`
+	// MediaFiles is a path list of files to be copied and used during the ISO installation.
+	MediaFiles []string `mapstructure:"media_files" required:"false"`
+	// BootCommand is a list of strings that represent the keystrokes to be sent to the VM console
+	// to automate the installation via a new VNC connection.
+	BootCommand []string `mapstructure:"boot_command" required:"false"`
+	// BootWait is the amount of time to wait before sending the boot command.
+	// This is useful if the VM takes some time to boot and be ready to accept keystrokes.
+	BootWait time.Duration `mapstructure:"boot_wait" required:"false"`
+	// InstallationWaitTimeout is the amount of time to wait for the installation to be completed.
+	InstallationWaitTimeout time.Duration `mapstructure:"installation_wait_timeout" required:"true"`
+	// Communicator is the type of communicator to use to connect to the VM.
+	// Supported values are "ssh" and "winrm".
+	Communicator string `mapstructure:"communicator" required:"false"`
+	// SSHHost is the hostname or IP address to use to connect via SSH.
+	SSHHost string `mapstructure:"ssh_host" required:"false"`
+	// SSHLocalPort is the local port to use to connect via SSH.
+	SSHLocalPort int `mapstructure:"ssh_local_port" required:"false"`
+	// SSHRemotePort is the remote port to use to connect via SSH.
+	SSHRemotePort int `mapstructure:"ssh_remote_port" required:"false"`
+	// SSHUsername is the username to use to connect via SSH.
+	SSHUsername string `mapstructure:"ssh_username" required:"false"`
+	// SSHPassword is the password to use to connect via SSH.
+	SSHPassword string `mapstructure:"ssh_password" required:"false"`
+	// SSHWaitTimeout is the amount of time to wait for the SSH service to be available.
+	SSHWaitTimeout time.Duration `mapstructure:"ssh_wait_timeout" required:"false"`
+	// WinRMHost is the hostname or IP address to use to connect via WinRM.
+	WinRMHost string `mapstructure:"winrm_host" required:"false"`
+	// WinRMLocalPort is the local port to use to connect via WinRM.
+	WinRMLocalPort int `mapstructure:"winrm_local_port" required:"false"`
+	// WinRMRemotePort is the remote port to use to connect via WinRM.
+	WinRMRemotePort int `mapstructure:"winrm_remote_port" required:"false"`
+	// WinRMUsername is the username to use to connect via WinRM.
+	WinRMUsername string `mapstructure:"winrm_username" required:"false"`
+	// WinRMPassword is the password to use to connect via WinRM.
+	WinRMPassword string `mapstructure:"winrm_password" required:"false"`
+	// WinRMWaitTimeout is the amount of time to wait for the WinRM service to be available.
+	WinRMWaitTimeout time.Duration `mapstructure:"winrm_wait_timeout" required:"false"`
 
-	// Keep the temporary VM after the build
-	KeepVM bool `mapstructure:"keep_vm"`
+	// KeepVM indicates whether to keep the temporary VM after the image has been created.
+	// If false, the VM and all its resources will be deleted after the image is created.
+	// If true, only the VM resource will be kept, all other resources will be deleted.
+	// Default is false.
+	//
+	// This can be useful for debugging purposes, to inspect the VM and its disks.
+	// However, it is recommended to set this to false in production environments to avoid
+	// resource leaks.
+	KeepVM bool `mapstructure:"keep_vm" required:"false"`
 }
 
 func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
