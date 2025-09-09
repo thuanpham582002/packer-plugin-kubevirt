@@ -1,61 +1,59 @@
 <!-- Code generated from the comments of the Config struct in builder/kubevirt/iso/config.go; DO NOT EDIT MANUALLY -->
 
-- `kube_config` (string) - Kube Config
+- `instance_type_kind` (string) - InstanceTypeKind is the kind of the InstanceType resource to use in the temporary VM.
+  Other supported value is "virtualmachineclusterinstancetype".
 
-- `name` (string) - Name
+- `preference_kind` (string) - PreferenceKind is the kind of the Preference resource to use in the temporary VM.
+  Other supported value is "virtualmachineclusterpreference".
 
-- `namespace` (string) - Namespace
+- `os_type` (string) - OperatingSystemType is the type of operating system to install.
+  Supported values are "linux" and "windows". Default is "linux".
 
-- `iso_volume_name` (string) - Iso Volume Name
+- `networks` ([]Network) - Networks is a list of networks to attach to the temporary VM.
+  If no networks are specified, a single pod network will be used.
 
-- `disk_size` (string) - Disk Size
+- `media_files` ([]string) - MediaFiles is a path list of files to be copied and used during the ISO installation.
 
-- `instance_type` (string) - Instance Type
+- `boot_command` ([]string) - BootCommand is a list of strings that represent the keystrokes to be sent to the VM console
+  to automate the installation via a new VNC connection.
 
-- `instance_type_kind` (string) - Instance Type Kind
+- `boot_wait` (duration string | ex: "1h5m2s") - BootWait is the amount of time to wait before sending the boot command.
+  This is useful if the VM takes some time to boot and be ready to accept keystrokes.
 
-- `preference` (string) - Preference
+- `communicator` (string) - Communicator is the type of communicator to use to connect to the VM.
+  Supported values are "ssh" and "winrm".
 
-- `preference_kind` (string) - Preference Kind
+- `ssh_host` (string) - SSHHost is the hostname or IP address to use to connect via SSH.
 
-- `os_type` (string) - Operating System Type
+- `ssh_local_port` (int) - SSHLocalPort is the local port to use to connect via SSH.
 
-- `networks` ([]Network) - Networks
+- `ssh_remote_port` (int) - SSHRemotePort is the remote port to use to connect via SSH.
 
-- `media_files` ([]string) - Media Files
+- `ssh_username` (string) - SSHUsername is the username to use to connect via SSH.
 
-- `boot_command` ([]string) - Boot Command
+- `ssh_password` (string) - SSHPassword is the password to use to connect via SSH.
 
-- `boot_wait` (duration string | ex: "1h5m2s") - Boot Wait
+- `ssh_wait_timeout` (duration string | ex: "1h5m2s") - SSHWaitTimeout is the amount of time to wait for the SSH service to be available.
 
-- `installation_wait_timeout` (duration string | ex: "1h5m2s") - Installation Wait Timeout
+- `winrm_host` (string) - WinRMHost is the hostname or IP address to use to connect via WinRM.
 
-- `communicator` (string) - Communicator
+- `winrm_local_port` (int) - WinRMLocalPort is the local port to use to connect via WinRM.
 
-- `ssh_host` (string) - SSH Host
+- `winrm_remote_port` (int) - WinRMRemotePort is the remote port to use to connect via WinRM.
 
-- `ssh_local_port` (int) - SSH Local Port
+- `winrm_username` (string) - WinRMUsername is the username to use to connect via WinRM.
 
-- `ssh_remote_port` (int) - SSH Remote Port
+- `winrm_password` (string) - WinRMPassword is the password to use to connect via WinRM.
 
-- `ssh_username` (string) - SSH Username
+- `winrm_wait_timeout` (duration string | ex: "1h5m2s") - WinRMWaitTimeout is the amount of time to wait for the WinRM service to be available.
 
-- `ssh_password` (string) - SSH Password
-
-- `ssh_wait_timeout` (duration string | ex: "1h5m2s") - SSH Wait Timeout
-
-- `winrm_host` (string) - Win RM Host
-
-- `winrm_local_port` (int) - Win RM Local Port
-
-- `winrm_remote_port` (int) - Win RM Remote Port
-
-- `winrm_username` (string) - Win RM Username
-
-- `winrm_password` (string) - Win RM Password
-
-- `winrm_wait_timeout` (duration string | ex: "1h5m2s") - Win RM Wait Timeout
-
-- `keep_vm` (bool) - Keep the temporary VM after the build
+- `keep_vm` (bool) - KeepVM indicates whether to keep the temporary VM after the image has been created.
+  If false, the VM and all its resources will be deleted after the image is created.
+  If true, only the VM resource will be kept, all other resources will be deleted.
+  Default is false.
+  
+  This can be useful for debugging purposes, to inspect the VM and its disks.
+  However, it is recommended to set this to false in production environments to avoid
+  resource leaks.
 
 <!-- End of code generated from the comments of the Config struct in builder/kubevirt/iso/config.go; -->
