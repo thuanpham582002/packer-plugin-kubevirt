@@ -15,9 +15,16 @@ import (
 )
 
 type StepStartPortForward struct {
-	config Config
-	client kubecli.KubevirtClient
+	Config        Config
+	Client        kubecli.KubevirtClient
+	ForwarderFunc PortForwarderFactory
 }
+
+type PortForwarder interface {
+	StartForwarding(address *net.IPAddr, port common.ForwardedPort) error
+}
+
+type PortForwarderFactory func(kind, namespace, name string, resource common.PortforwardableResource) PortForwarder
 
 func (s *StepStartPortForward) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	var ipAddress string
@@ -25,38 +32,34 @@ func (s *StepStartPortForward) Run(ctx context.Context, state multistep.StateBag
 	var remotePort int
 
 	ui := state.Get("ui").(packer.Ui)
-	name := s.config.Name
-	namespace := s.config.Namespace
+	name := s.Config.Name
+	namespace := s.Config.Namespace
 
-	if s.config.Communicator == "ssh" {
-		ipAddress = s.config.SSHHost
-		localPort = s.config.SSHLocalPort
-		remotePort = s.config.SSHRemotePort
+	if s.Config.Communicator == "ssh" {
+		ipAddress = s.Config.SSHHost
+		localPort = s.Config.SSHLocalPort
+		remotePort = s.Config.SSHRemotePort
 	}
 
-	if s.config.Communicator == "winrm" {
-		ipAddress = s.config.WinRMHost
-		localPort = s.config.WinRMLocalPort
-		remotePort = s.config.WinRMRemotePort
+	if s.Config.Communicator == "winrm" {
+		ipAddress = s.Config.WinRMHost
+		localPort = s.Config.WinRMLocalPort
+		remotePort = s.Config.WinRMRemotePort
 	}
 
 	address, _ := net.ResolveIPAddr("", ipAddress)
-	vm := s.client.VirtualMachine(namespace)
+	vm := s.Client.VirtualMachine(namespace)
+
+	// Use the factory if provided, otherwise fallback to default
+	factory := s.ForwarderFunc
+	if factory == nil {
+		factory = DefaultPortForwarder
+	}
+	forwarder := factory("vm", namespace, name, vm)
 
 	errChan := make(chan error, 1)
 	go func() {
-		forward := common.PortForward{
-			Address:  address,
-			Resource: vm,
-		}
-		forwarder := common.PortForwarder{
-			Kind:      "vm",
-			Namespace: namespace,
-			Name:      name,
-			Resource:  forward.Resource,
-		}
-
-		err := forwarder.StartForwarding(forward.Address, common.ForwardedPort{
+		err := forwarder.StartForwarding(address, common.ForwardedPort{
 			Local:    localPort,
 			Remote:   remotePort,
 			Protocol: common.ProtocolTCP,
@@ -79,4 +82,13 @@ func (s *StepStartPortForward) Run(ctx context.Context, state multistep.StateBag
 
 func (s *StepStartPortForward) Cleanup(state multistep.StateBag) {
 	// Left blank intentionally
+}
+
+func DefaultPortForwarder(kind, namespace, name string, resource common.PortforwardableResource) PortForwarder {
+	return &common.PortForwarder{
+		Kind:      kind,
+		Namespace: namespace,
+		Name:      name,
+		Resource:  resource,
+	}
 }

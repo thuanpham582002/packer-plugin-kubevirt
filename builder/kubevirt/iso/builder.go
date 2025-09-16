@@ -67,23 +67,23 @@ func (b *Builder) Run(ctx context.Context, ui packer.Ui, hook packer.Hook) (pack
 	steps := []multistep.Step{}
 	steps = append(steps,
 		&StepValidateIsoDataVolume{
-			config: b.config,
-			client: b.client,
+			Config: b.config,
+			Client: b.client,
 		},
 		&StepCopyMediaFiles{
-			config: b.config,
-			client: b.clientset,
+			Config: b.config,
+			Client: b.clientset,
 		},
 		&StepCreateVirtualMachine{
-			config: b.config,
-			client: b.client,
+			Config: b.config,
+			Client: b.client,
 		},
 		&StepBootCommand{
 			config: b.config,
 			client: b.client,
 		},
 		&StepWaitForInstallation{
-			config: b.config,
+			Config: b.config,
 		},
 	)
 
@@ -107,12 +107,12 @@ func (b *Builder) Run(ctx context.Context, ui packer.Ui, hook packer.Hook) (pack
 
 	steps = append(steps,
 		&StepStopVirtualMachine{
-			config: b.config,
-			client: b.client,
+			Config: b.config,
+			Client: b.client,
 		},
 		&StepCreateBootableVolume{
-			config: b.config,
-			client: b.client,
+			Config: b.config,
+			Client: b.client,
 		},
 	)
 
@@ -148,8 +148,9 @@ func (b *Builder) buildSSHSteps() ([]multistep.Step, []error) {
 
 	steps := []multistep.Step{
 		&StepStartPortForward{
-			config: b.config,
-			client: b.client,
+			Config:        b.config,
+			Client:        b.client,
+			ForwarderFunc: DefaultPortForwarder,
 		},
 		&communicator.StepConnect{
 			Config: commConfig,
@@ -192,8 +193,9 @@ func (b *Builder) buildWinRMSteps() ([]multistep.Step, []error) {
 
 	steps := []multistep.Step{
 		&StepStartPortForward{
-			config: b.config,
-			client: b.client,
+			Config:        b.config,
+			Client:        b.client,
+			ForwarderFunc: DefaultPortForwarder,
 		},
 		&communicator.StepConnect{
 			Config: commConfig,

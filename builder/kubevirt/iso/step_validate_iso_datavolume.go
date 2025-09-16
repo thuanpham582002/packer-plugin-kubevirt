@@ -14,24 +14,24 @@ import (
 )
 
 type StepValidateIsoDataVolume struct {
-	config Config
-	client kubecli.KubevirtClient
+	Config Config
+	Client kubecli.KubevirtClient
 }
 
 func (s *StepValidateIsoDataVolume) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
-	isoVolumeNamespace := s.config.Namespace
-	isoVolumeName := s.config.IsoVolumeName
+	isoVolumeNamespace := s.Config.Namespace
+	isoVolumeName := s.Config.IsoVolumeName
 
 	ui.Sayf("Validating the existence of the ISO DataVolume (%s/%s)...", isoVolumeNamespace, isoVolumeName)
 
-	_, err := s.client.CdiClient().CdiV1beta1().DataVolumes(isoVolumeNamespace).Get(ctx, isoVolumeName, metav1.GetOptions{})
+	_, err := s.Client.CdiClient().CdiV1beta1().DataVolumes(isoVolumeNamespace).Get(ctx, isoVolumeName, metav1.GetOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
 	}
 
-	if err := waitUntilDataVolumeSucceeded(ctx, s.client, isoVolumeNamespace, isoVolumeName); err != nil {
+	if err := WaitUntilDataVolumeSucceeded(ctx, s.Client, isoVolumeNamespace, isoVolumeName); err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
 	}

@@ -14,15 +14,15 @@ import (
 )
 
 type StepCopyMediaFiles struct {
-	config Config
-	client *kubernetes.Clientset
+	Config Config
+	Client kubernetes.Interface
 }
 
 func (s *StepCopyMediaFiles) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
-	name := s.config.Name
-	namespace := s.config.Namespace
-	mediaFiles := s.config.MediaFiles
+	name := s.Config.Name
+	namespace := s.Config.Namespace
+	mediaFiles := s.Config.MediaFiles
 
 	ui.Sayf("Creating a new ConfigMap to store media files (%s/%s)...", namespace, name)
 
@@ -32,7 +32,7 @@ func (s *StepCopyMediaFiles) Run(ctx context.Context, state multistep.StateBag) 
 		return multistep.ActionHalt
 	}
 
-	_, err = s.client.CoreV1().ConfigMaps(namespace).Create(ctx, configMap, metav1.CreateOptions{})
+	_, err = s.Client.CoreV1().ConfigMaps(namespace).Create(ctx, configMap, metav1.CreateOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
@@ -42,10 +42,10 @@ func (s *StepCopyMediaFiles) Run(ctx context.Context, state multistep.StateBag) 
 
 func (s *StepCopyMediaFiles) Cleanup(state multistep.StateBag) {
 	ui := state.Get("ui").(packer.Ui)
-	name := s.config.Name
-	namespace := s.config.Namespace
+	name := s.Config.Name
+	namespace := s.Config.Namespace
 
 	ui.Sayf("Deleting ConfigMap (%s/%s)...", namespace, name)
 
-	_ = s.client.CoreV1().ConfigMaps(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
+	_ = s.Client.CoreV1().ConfigMaps(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
 }
