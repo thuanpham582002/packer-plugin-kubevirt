@@ -12,12 +12,12 @@ import (
 )
 
 type StepWaitForInstallation struct {
-	config Config
+	Config Config
 }
 
 func (s *StepWaitForInstallation) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
-	installationWaitTimeout := s.config.InstallationWaitTimeout
+	installationWaitTimeout := s.Config.InstallationWaitTimeout
 
 	if int64(installationWaitTimeout) > 0 {
 		ui.Sayf("Waiting %s to complete ISO installation...", installationWaitTimeout.String())

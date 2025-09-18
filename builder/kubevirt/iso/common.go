@@ -14,7 +14,7 @@ import (
 	"kubevirt.io/containerized-data-importer-api/pkg/apis/core/v1beta1"
 )
 
-func waitUntilDataVolumeSucceeded(ctx context.Context, client kubecli.KubevirtClient, namespace, name string) error {
+func WaitUntilDataVolumeSucceeded(ctx context.Context, client kubecli.KubevirtClient, namespace, name string) error {
 	pollInterval := 15 * time.Second
 	pollTimeout := 3600 * time.Second
 	poller := func(ctx context.Context) (bool, error) {

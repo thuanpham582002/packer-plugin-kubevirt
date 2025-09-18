@@ -17,25 +17,25 @@ import (
 )
 
 type StepStopVirtualMachine struct {
-	config Config
-	client kubecli.KubevirtClient
+	Config Config
+	Client kubecli.KubevirtClient
 }
 
 func (s *StepStopVirtualMachine) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
-	name := s.config.Name
-	namespace := s.config.Namespace
+	name := s.Config.Name
+	namespace := s.Config.Namespace
 
 	ui.Sayf("Stopping the temporary VirtualMachine (%s/%s)...", namespace, name)
 
-	vm, err := s.client.VirtualMachine(namespace).Get(ctx, name, metav1.GetOptions{})
+	vm, err := s.Client.VirtualMachine(namespace).Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
 	}
 	vm.Spec.RunStrategy = ptr.To(v1.RunStrategyHalted)
 
-	_, err = s.client.VirtualMachine(vm.Namespace).Update(ctx, vm, metav1.UpdateOptions{})
+	_, err = s.Client.VirtualMachine(vm.Namespace).Update(ctx, vm, metav1.UpdateOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt

@@ -15,34 +15,34 @@ import (
 )
 
 type StepCreateBootableVolume struct {
-	config Config
-	client kubecli.KubevirtClient
+	Config Config
+	Client kubecli.KubevirtClient
 }
 
 func (s *StepCreateBootableVolume) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	ui := state.Get("ui").(packer.Ui)
-	name := s.config.Name
-	namespace := s.config.Namespace
-	diskSize := s.config.DiskSize
-	instanceType := s.config.InstanceType
-	preferenceName := s.config.Preference
+	name := s.Config.Name
+	namespace := s.Config.Namespace
+	diskSize := s.Config.DiskSize
+	instanceType := s.Config.InstanceType
+	preferenceName := s.Config.Preference
 	cloneVolume := cloneVolume(name, namespace, diskSize)
 	sourceVolume := sourceVolume(name, namespace, instanceType, preferenceName)
 
 	ui.Sayf("Creating a new bootable volume (%s/%s)...", namespace, name)
 
-	dv, err := s.client.CdiClient().CdiV1beta1().DataVolumes(namespace).Create(ctx, cloneVolume, metav1.CreateOptions{})
+	dv, err := s.Client.CdiClient().CdiV1beta1().DataVolumes(namespace).Create(ctx, cloneVolume, metav1.CreateOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
 	}
 
-	if err = waitUntilDataVolumeSucceeded(ctx, s.client, dv.Namespace, dv.Name); err != nil {
+	if err = WaitUntilDataVolumeSucceeded(ctx, s.Client, dv.Namespace, dv.Name); err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
 	}
 
-	ds, err := s.client.CdiClient().CdiV1beta1().DataSources(namespace).Create(ctx, sourceVolume, metav1.CreateOptions{})
+	ds, err := s.Client.CdiClient().CdiV1beta1().DataSources(namespace).Create(ctx, sourceVolume, metav1.CreateOptions{})
 	if err != nil {
 		ui.Error(err.Error())
 		return multistep.ActionHalt
